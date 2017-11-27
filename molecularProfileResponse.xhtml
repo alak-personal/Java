@@ -1,0 +1,377 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+ 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>
+			<h:outputText value="#{msgs['CGA_title']} - Therapy Efficacy Evidence"/>
+    	</title>
+    	<link href="../../stylesheet/jcmsStyles.css" rel="stylesheet" media="screen" />
+		<link rel="shortcut icon" href="../../images/favicon.ico" />
+	</h:head>
+
+	<h:body>
+ 		<f:subview id="mainheader"><ui:include src="../mainheader.xhtml"/></f:subview>
+		<f:subview id="menubar"><ui:include src="../menubar.xhtml"/></f:subview>
+		
+     	<h:form id="mprForm" style="margin-left:75px;margin-right:75px;">
+            <br />
+            <h2>Molecular Profile Response </h2> 
+			<p><br /></p>
+
+        	<p:panel id="mprSearchPanelId" styleClass="roundedBorder" header="Search Molecular Profile Responses" style="width:650px;" toggleable="true">
+				<h:outputText styleClass="outputTextStyle" value="Enter one or more criteria to search for associated molecular profile responses" />
+				<div style="height:15px" />
+	            <h:panelGrid columns="2" cellpadding="3">
+		            <h:outputLabel styleClass="smallTextBold" value="Molecular Profile Name: " />  
+             		<p:autoComplete id="acMPName" value="#{molecularProfileResponseBean.searchMProfileName}"  style="width:150px;" 
+                    							 completeMethod="#{molecularProfileResponseBean.completeMolecularProfile}" dropdown="false" scrollHeight="400">
+                    </p:autoComplete>  
+
+		            <h:outputLabel styleClass="smallTextBold" value="Therapy Name: " />  
+             		<p:autoComplete id="acTherapyName" value="#{molecularProfileResponseBean.searchTherapyName}"  style="width:150px;" 
+                    							 completeMethod="#{molecularProfileResponseBean.completeTherapy}" dropdown="false" scrollHeight="400">
+                    </p:autoComplete>  
+
+       	            <h:outputLabel styleClass="smallTextBold" value="Indication (Tumor Type): " />  
+             		<p:autoComplete id="acIndication" value="#{molecularProfileResponseBean.searchIndication}"  style="width:150px;" 
+                    							 completeMethod="#{molecularProfileResponseBean.completeIndication}" dropdown="false" scrollHeight="400">
+                    </p:autoComplete>  
+
+		            <h:outputLabel styleClass="smallTextBold" value="Response Type: " />  
+    			    <p:selectOneMenu id="responseTypeSelect" value="#{molecularProfileResponseBean.searchResponseType}" effect="fade" style="width:200px;border-radius:5px;-moz-border-radius:2px;">  
+		        		<f:selectItem itemLabel="" itemValue="" /> 
+		            	<f:selectItems value="#{vocabularyBean.responseTypeList}" />  
+		        	</p:selectOneMenu>
+
+        			<p:commandLink style="color:#0d9aff;font-weight: bolder;font: 16px Calibri, sans-serif;"  
+        					value = "View all efficacy evidences for above selection" 
+        					action="#{molecularProfileResponseBean.navigateToQueryEEs}">
+        			</p:commandLink>
+
+	            </h:panelGrid>
+	            <div style="height:15px" />
+	          	<p:messages id="prMsgId" for="profileResponsesSelectionMessage" autoUpdate="true" />
+	            <p:separator/>
+	            <div style="height:15px" />
+	            <h:panelGrid columns="2" cellpadding="5">
+		            <p:commandButton styleClass="largeButton" type="submit" value="Display Profile Responses" id="displayCB"
+	       						 actionListener="#{molecularProfileResponseBean.displayProfileResponses}"  
+	       						 update=":mprForm:prMsgId :mprForm:mprsPanel :mprForm:profileResponsesTable :mprForm:mprWorkspacePanelId" >
+			        	<p:tooltip for="displayCB" showEffect="fade" hideEffect="fade" value="Click to display profile responses for above criteria"/> 	
+	       			</p:commandButton>
+		            <p:commandButton styleClass="largeButton" type="submit" value="Create New Profile Response" id="createMPRCB1"
+		       						 actionListener="#{molecularProfileResponseBean.createNewMolecularProfileResponse}"  
+		       						 update=":mprForm:mprWorkspacePanelId" >
+		       						 <!-- rendered="#{molecularProfileResponseBean.showProfileResponses}" > -->
+				        <p:tooltip for="createMPRCB1" showEffect="fade" hideEffect="fade" value="Click to display efficacy evidences for above profile-therapy combination"/> 	
+		       		</p:commandButton>       			
+	            </h:panelGrid>
+        	</p:panel>  
+        	<div style="height:30px" />
+
+			<!-- ========================= -->
+			<!-- Available Profile Responses  --> 
+			<!-- ========================= -->
+		    <p:outputPanel id="mprsPanel">  
+		   		<h:outputText style="font: 14px Calibri, sans-serif;color: #002D72;line-height: 20px;font-weight: bold;" value="List of Molecular Profile Responses:" 
+		   						 rendered="#{molecularProfileResponseBean.showProfileResponses}"/>
+				<div style="height:15px" />
+		    	
+		     	<p:dataTable id="profileResponsesTable" scrollable="true" resizableColumns="true" scrollHeight="300"
+		     				 style="width:1000px"
+		     				 rendered="#{molecularProfileResponseBean.showProfileResponses}" 
+				     		 widgetVar="responsesTable" emptyMessage="No profile responses found for specified criteria"
+				     		 var="response" value="#{molecularProfileResponseBean.mpResponseDTOsList}"  
+				     		 paginator="true" rows="10" paginatorPosition="bottom" 
+				     		 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+	                 		 rowsPerPageTemplate="10, 20, 30, 40"
+	                 		 rowKey="#{response.response_id}" rowIndexVar="responseRowIndex"
+	                 		 styleClass="roundedBorder"
+	                 		 >  
+	                 		 <!-- style="width:#{geneVariantBean.variantTableWidth}" filteredValue="#{geneVariantBean.filteredVariants}"
+	                 		 		selection="#{molecularProfileResponseBean.selectedMPResponse}" selectionMode="single"-->
+
+	                <p:column styleClass="ui-table-column" style="width:6%">  
+	                    <p:commandButton id="showResponseId" 
+	                    				update=":mprForm:mprsPanel :mprForm:mprWorkspacePanelId" 
+	                    			  	icon="ui-icon-search" iconPos="center"
+	                    				actionListener="#{molecularProfileResponseBean.displaySelectedProfileResponse}">  
+	                    	<f:attribute name="attrSelectedResponse" value="#{response}" />
+							<p:tooltip for="showResponseId" value="Show efficacy evidences for #{response.response_id}" showEffect="fade" hideEffect="fade" />
+	                    </p:commandButton>  
+	                    <p:commandButton id="deleteResponseId" icon="ui-icon-trash" iconPos="center" 
+	                    		rendered="#{response.numberEfficacyEvidences == 0}"
+	                    		actionListener="#{molecularProfileResponseBean.deleteMolecularProfileResponse}" 
+	                    		update=":mprForm:mprsPanel :mprForm:responsesMessageId :mprForm:mprWorkspacePanelId" >
+	                    	<f:attribute name="deleteResponseRowIndex" value="#{responseRowIndex}" />
+							<p:tooltip for="deleteResponseId" showEffect="fade" hideEffect="fade" 	value="Delete selected molecular profile response from database" />
+							<p:confirm header="Confirm Delete" message="Are you sure you want to delete selected profile response from database? Deletion is PERMANENT." icon="ui-icon-alert" />  
+	                    </p:commandButton>
+ 				        <p:commandButton id="deleteResponseIdDisabled" icon="ui-icon-trash"  iconPos="center" 
+				        	       		rendered="#{response.numberEfficacyEvidences gt 0}" >
+							<p:tooltip for="deleteResponseIdDisabled" showEffect="fade" hideEffect="fade" 
+								   value="Must delete (#{response.numberEfficacyEvidences}) efficacy evidences from profile response #{response.response_id} and SAVE before you can delete selected response." />		                    
+						</p:commandButton>
+		            </p:column>
+
+		        	<p:column styleClass="ui-table-column"  id="responseIdCol" sortBy="response_id"   style="width:16%">
+		        		<f:facet name="header">Response Id</f:facet>
+		        		<h:outputText value="#{response.response_id}" /> 
+		        	</p:column>		  
+		        	      	
+		        	<p:column styleClass="ui-table-column"  id="therapyCol" sortBy="therapy_name"  style="width:16%">
+		        		<f:facet name="header">Therapy Name</f:facet>
+		        		<h:outputText value="#{response.therapy_name}" /> 
+		        	</p:column>
+		        	
+		        	<p:column styleClass="ui-table-column" id="profileCol" sortBy="profile_name" style="width:16%"> 
+		        		<f:facet name="header">Profile Name</f:facet>
+		        		<h:outputText value="#{response.profile_name}" /> 
+		        	</p:column>
+		        	
+		        	<p:column styleClass="ui-table-column" id="indicationCol" sortBy="indication_name"  style="width:30%">
+		        		<f:facet name="header">Indication</f:facet>
+		        		<h:outputText value="#{response.indication_name}" /> 
+		        	</p:column>
+		        	
+		        	<p:column styleClass="ui-table-column" id="responseTypeCol" sortBy="response_type"  style="width:16%">
+		        		<f:facet name="header">Response Type</f:facet>
+		        		<h:outputText value="#{response.response_type}" /> 
+		        	</p:column>
+		        	
+		        	 <f:facet name="footer">  
+          					No. of molecular profile responses : #{molecularProfileResponseBean.numProfileResponses}  
+   					</f:facet>
+   				</p:dataTable>   
+				<div style="height:20px" />
+				<p:messages id="responsesMessageId" for="profileResponsesTableMessage" autoUpdate="true" />
+		    </p:outputPanel>
+		    <div style="height:20px" />
+			
+			<!-- =================================== -->
+			<!-- Molecular Profile Response workspace  --> 
+			<!-- =================================== -->
+				
+			<p:outputPanel id="mprWorkspacePanelId" layout="block">
+				<!-- <p:fieldset legend="Molecular Profile Response Workspace" > -->
+				<p:fieldset legend="#{molecularProfileResponseBean.workspaceLegendText}" rendered="#{molecularProfileResponseBean.showSelectedMPResponse}">
+					<div style="height:10px" />
+					<h:outputText styleClass="outputTextStyleRed" value="NOTE: Any UNSAVED changes in workspace will be lost if user chooses to launch a different search OR display another profile response OR create a new response." />
+					<div style="height:10px" />
+					<h:panelGrid columns="2" cellpadding="10" style="width:1150px;">
+						<h:panelGrid columns="2" cellpadding="5">
+				            <h:outputLabel styleClass="smallTextBold" value="Molecular Profile Name: " />  
+		             		<p:autoComplete id="acsMPName" value="#{molecularProfileResponseBean.selectedMPResponse.profile_name}"  style="width:150px;" 
+		                    							 completeMethod="#{molecularProfileResponseBean.completeMolecularProfile}" dropdown="false" scrollHeight="400">
+		                    </p:autoComplete>  
+		
+		       	            <h:outputLabel styleClass="smallTextBold required" value="Indication (Tumor Type): " />  
+		             		<p:autoComplete id="acsIndication" value="#{molecularProfileResponseBean.selectedMPResponse.indication_name}"  style="width:150px;" 
+		                    							 completeMethod="#{molecularProfileResponseBean.completeIndication}" dropdown="false" scrollHeight="400">
+		                    </p:autoComplete>  
+			            </h:panelGrid>
+
+						<h:panelGrid columns="2" cellpadding="5">
+				            <h:outputLabel styleClass="smallTextBold required" value="Therapy Name: " /> 
+				            <h:panelGrid columns="2" >
+					            <p:inputText value="#{molecularProfileResponseBean.selectedMPResponse.therapy_name}" style="width:175px;" styleClass="roundedBorder" readonly="true"/>
+					            <p:commandButton styleClass="largeButton" id="addTherapyToResponseId" value="Select Therapy Name" 
+					                    		update=":mprForm:selectTherapyDialogId :mprForm:mprWorkspacePanelId" 
+					                    		oncomplete="PF('selectTherapyDialogWV').show()">
+					                    		<!-- disabled="#{molecularProfileResponseBean.disableSelectTherapy}">  -->
+											<p:tooltip for="addTherapyToResponseId" value="Select a therapy for molecular profile response" showEffect="fade" hideEffect="fade"/>
+					            </p:commandButton>
+							</h:panelGrid>
+		
+				            <h:outputLabel styleClass="smallTextBold required" value="Response Type: " />  
+		    			    <p:selectOneMenu id="responseTypeSearchSelect" value="#{molecularProfileResponseBean.selectedMPResponse.response_type}" effect="fade" style="width:185px;border-radius:5px;-moz-border-radius:2px;">  
+				        		<f:selectItem itemLabel="" itemValue="" /> 
+				            	<f:selectItems value="#{vocabularyBean.responseTypeList}" />  
+				        	</p:selectOneMenu>
+						</h:panelGrid>
+					</h:panelGrid>
+			     	<div style="height:10px" />
+			     	<h:outputText styleClass="smallTextBold" value="Efficacy Evidences: " />
+			     	<div style="height:10px" />
+			     	<p:dataTable id="efficacyEvidenceId" scrollable="true" scrollHeight="350" resizableColumns="true" style="width:1200px" 
+					     		 var="efficacyEvidence" widgetVar="efficacyEvidenceTableWV" emptyMessage="No efficacy evidence found for this profile response"
+					     		 value="#{molecularProfileResponseBean.selectedMPResponse.efficacyEvidences}"  
+					     		 paginator="false" rowsPerPageTemplate="#{molecularProfileResponseBean.selectedMPResponse.numberEfficacyEvidences}" 
+		                 		 selectionMode="single" rowIndexVar="effEvidenceRowIndex" rowKey="#{molecularProfileResponseBean.selectedMPResponse.response_id}"
+		                 		 editable="true" styleClass="roundedBorder">
+		                 		 <!-- rendered="#{molecularProfileResponseBean.showEfficacyEvidences}" -->
+	
+			        	<p:column styleClass="ui-table-column" style="width:2%">
+			        		<f:facet name="header">
+			                    <p:commandButton id="addEfficacyEvidenceId" icon="ui-icon-plus" iconPos="center" 
+			                    				 actionListener="#{molecularProfileResponseBean.addEfficacyEvidence}" 
+												 update=":mprForm:mprWorkspacePanelId"/>
+								<p:tooltip for="addEfficacyEvidenceId" showEffect="fade" hideEffect="fade" 
+										   value="Add efficacy evidence for Profile Response #{molecularProfileResponseBean.selectedMPResponse.response_id} "/>
+			        		</f:facet>
+		                    <p:commandButton id="deleteEfficacyEvidenceId" icon="ui-icon-trash" iconPos="center" 
+		                    				actionListener="#{molecularProfileResponseBean.deleteEfficacyEvidence}" 
+		                    				update=":mprForm:mprWorkspacePanelId :mprForm:evidenceEditMessageId">
+		                    	<f:attribute name="deleteEvidenceRowIndex" value="#{effEvidenceRowIndex}" />
+		                       	<p:confirm header="Confirm Delete Efficacy Evidence" message="Are you sure you want to delete selected Efficacy Evidence ?" icon="ui-icon-alert"/>
+		                    </p:commandButton>
+							<p:tooltip for="deleteEfficacyEvidenceId" showEffect="fade" hideEffect="fade" 
+									   value="Delete selected efficacy evidence for Profile Response #{molecularProfileResponseBean.selectedMPResponse.response_id}"/>
+		                </p:column>  
+			        	
+	 		        	<p:column styleClass="ui-table-column" headerText="Approval Status" style="width:11%">
+			        		<p:selectOneMenu id="approvalStatusSelect" value="#{efficacyEvidence.approval_status}" effect="fade" style="width:120px;border-radius:5px;-moz-border-radius:2px;">  
+	      						<f:selectItem itemLabel="" itemValue="" /> 
+	          					<f:selectItems value="#{vocabularyBean.approvalStatusList}" />  
+	      					</p:selectOneMenu> 		        	
+	      				</p:column>
+			        	
+	 		        	<p:column styleClass="ui-table-column" headerText="Evidence Type" style="width:11%">
+			        		<p:selectOneMenu id="evidenceTypeSelect" value="#{efficacyEvidence.evidence_type}" effect="fade" style="width:120px;border-radius:5px;-moz-border-radius:2px;">  
+	      						<f:selectItem itemLabel="" itemValue="" /> 
+	          					<f:selectItems value="#{vocabularyBean.evidenceTypeList}" /> 
+	      					</p:selectOneMenu> 		        	
+	      				</p:column>
+	
+			        	<p:column styleClass="ui-table-column" style="width:36%">
+			        		<f:facet name="header">
+			        			<h:outputText value="Efficacy Evidence" />
+								<h:outputLabel value="*" styleClass="reqColor" /> 
+			        		</f:facet>
+			                <p:inputTextarea value="#{efficacyEvidence.efficacy_evidence}"
+			                				style="width:95%; background-color:#{efficacyEvidence.color}" autoResize="false"  
+			                				rows="#{efficacyEvidence.rows}" >
+					            <p:ajax event="blur" />
+					        </p:inputTextarea>
+			        	</p:column>
+			        	
+			        	<p:column styleClass="ui-table-column" style="width:40%">
+			        		<f:facet name="header">
+			        			<h:outputText value="References" />
+								<h:outputLabel value="*" styleClass="reqColor" />
+			        		</f:facet>
+						     <p:dataTable id="editEffEvReferenceId" scrollable="false" resizableColumns="false"
+						     				 scrollWidth="0" 	
+								     		 value="#{efficacyEvidence.references}"  
+								     		 var="editReference" widgetVar="referencesTableWV" 
+								     		 emptyMessage="No references found for this Efficacy Evidence"
+								     		 paginator="false" 
+					                 		 selection="#{efficacyEvidence.selectedReference}" selectionMode="single" 
+					                 		 rowIndexVar="referenceRowIndex" rowKey="#{editReference.rowIndex}"
+					                 		 editable="true" editMode="cell"
+					                 		 rowStyleClass="ui-unhighlight"
+					                 		 >							        		
+						        	<p:column styleClass="ui-table-column" style="width:83%">
+					            		<p:autoComplete id="acReferenceId" value="#{editReference.reference}" 
+					            						completeMethod="#{referenceBean.completeReference}"
+					            						var="ref" itemLabel="#{ref.reference_name}" itemValue="#{ref}"
+					            						forceSelection="true" dropdown="true"
+					            						minQueryLength="1" effect="fade" scrollHeight="200">
+					            				<f:converter converterId="referenceConverter" />		
+	<!-- 										<p:ajax event="itemSelect" 
+														listener="#{referenceBean.referenceValueChangeListener}" 
+														update="@(.ui-datatable)" /> -->
+					            		</p:autoComplete>
+					            	</p:column>
+					            	
+						        	<p:column styleClass="ui-table-column" style="width:17%" >
+					                    <p:commandButton id="editReferenceId" icon="ui-icon-pencil" iconPos="left"
+					                    				 oncomplete="PF('referenceEditDialogWV').show()" 
+					                    				 actionListener="#{referenceBean.editReference}" 
+					                    				 update=":editReferenceFormId:referenceEditPGId">
+					                    	<f:attribute name="attrEditReference" value="#{editReference.reference}" />
+					                    	<f:attribute name="descriptionRowIndex" value="#{effEvidenceRowIndex}" />
+					                    	<f:attribute name="referenceRowIndex" value="#{referenceRowIndex}" />
+					                    	<f:attribute name="parentView" value="RESPONSE_DETAIL" />				                    	
+					                    </p:commandButton>
+										<p:tooltip for="editReferenceId" showEffect="fade" hideEffect="fade" 
+												   value="Edit reference #{editReference.reference.pmid}"/>
+												   
+					                    <p:commandButton id="clearReferenceId" icon="ui-icon-trash" iconPos="left"
+					                    				actionListener="#{molecularProfileResponseBean.clearEfficacyEvidenceReference}" 
+					                    				update=":mprForm:mprWorkspacePanelId :mprForm:evidenceEditMessageId" >
+					                    	<f:attribute name="clearEffEvidenceRowIndex" value="#{effEvidenceRowIndex}" />
+					                    	<f:attribute name="clearReferenceRowIndex" value="#{referenceRowIndex}" />
+											<p:confirm header="Confirmation" message="Are you sure you want to clear this reference?" icon="ui-icon-alert" />  
+					                    </p:commandButton>
+										<p:tooltip for="clearReferenceId" showEffect="fade" hideEffect="fade" 
+												   value="Clear reference #{editReference.reference.pmid}"/>
+				 			        </p:column>
+		
+							</p:dataTable>  
+	 			        </p:column>
+			        	
+			        	<p:column style="width:2%" >
+			        		<f:facet name="header">
+			                    <p:commandButton id="addReferenceId" icon="ui-icon-plus" iconPos="left"
+			                    				 oncomplete="PF('referenceEditDialogWV').show()" 
+			                    				 actionListener="#{referenceBean.addReference}"
+			                    				 update=":editReferenceFormId:referenceEditPGId">
+			                    </p:commandButton>
+								<p:tooltip for="addReferenceId" showEffect="fade" hideEffect="fade" 
+										   value="Add new reference"/>
+			        		</f:facet>
+		                    <p:commandButton id="addReferenceRowId" icon="ui-icon-plus" iconPos="center"
+		                    				 actionListener="#{molecularProfileResponseBean.addReferenceRow}"
+		                    				 update=":mprForm:mprWorkspacePanelId"
+		                    				 >
+								<f:attribute name="effEvidenceRowIndex" value="#{effEvidenceRowIndex}" />
+							</p:commandButton>
+							<p:tooltip for="addReferenceRowId" showEffect="fade" hideEffect="fade" 
+											   value="Add reference to efficacy evidence " />							   
+	 			        </p:column>
+	       			</p:dataTable>    
+
+
+					<!-- ================================= -->
+					<!-- Select therapy from list  -->
+					<!-- ================================= -->
+				    <p:dialog widgetVar="selectTherapyDialogWV" id="selectTherapyDialogId" 
+				    		  header="Select Therapy for Molecular Profile Response" modal="true" 
+				    		  width="675px" height="400px" resizable="true">
+				            <ui:include src="addTherapyToProfileResponse.xhtml"/>
+				    </p:dialog>  
+	
+					
+		            <div style="height:20px" />
+		            <p:separator/>
+		        	<p:messages id="evidenceEditMessageId" for="evidenceEditMessage" autoUpdate="true" />
+		            <h:panelGrid columns="2" padding="4px 10px" styleClass="ui-button-menu">
+		        		<p:commandButton styleClass="smallButton" type="submit" value="Save" 
+		        						 actionListener="#{molecularProfileResponseBean.saveMolecularProfileResponse}"  
+		        						 update=":mprForm:mprWorkspacePanelId :mprForm:mprsPanel :mprForm:profileResponsesTable" >
+		        		</p:commandButton>
+		        		<p:commandButton styleClass="smallButton" type="submit" value="Cancel" 
+		        						 actionListener="#{molecularProfileResponseBean.cancelEfficacyEvidenceEdit}" 
+		        						 update=":mprForm:mprWorkspacePanelId :mprForm:mprsPanel :mprForm:profileResponsesTable" />
+		            </h:panelGrid>
+	       			
+		        </p:fieldset>
+			</p:outputPanel>	
+			
+			<!-- Confirm dialog to delete from profile response  -->
+        	<p:confirmDialog showEffect="fade" hideEffect="fade" global="true">  
+			    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>  
+			    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>       
+		    </p:confirmDialog> 		
+			    
+    	
+    		</h:form> 
+
+			<!-- =================== -->
+			<!-- Edit Reference Detail -->
+			<!-- =================== -->
+			<ui:include src="referenceDetail.xhtml"/>
+
+     	<f:subview id="footer"><ui:include src="../footer.xhtml"/></f:subview>
+	</h:body>
+</html>
+

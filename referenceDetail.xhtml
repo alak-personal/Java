@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui">
+
+   	<h:form id="editReferenceFormId">  
+	    <p:dialog widgetVar="referenceEditDialogWV" id="referenceEditDialogId" 
+	    		  header="Reference Detail" modal="true">
+	    		   
+		    <h:panelGroup id="referenceEditPGId">
+				<h:panelGrid columns="2" style="margin:5px 5px 5px 5px;">
+						<h:panelGrid columns="2" cellpadding="2">
+				       		<h:panelGroup>
+				                <h:outputLabel value="PMID: " />  
+				        	</h:panelGroup> 
+				            <p:inputText id="pmidId" value="#{referenceBean.reference.pmid}" 
+				            			 validatorMessage="Validation error!  Please enter a number for PMID">
+					            <p:message for="pmidId" showDetail="false" showSummary="true"/>
+				            </p:inputText>  
+						  
+							<h:outputLabel value="Type: " />  
+				            <p:inputText value="#{referenceBean.reference.ref_type}" size="4" maxlength="4"/>  
+				
+							<h:outputLabel value="Volume: " />  
+				            <p:inputText value="#{referenceBean.reference.vol}" size="20" maxlength="20"/>  
+				             				 
+							<h:outputLabel value="Issue: " />  
+				            <p:inputText value="#{referenceBean.reference.issue}" size="20" maxlength="25"/>
+				            
+							<h:outputLabel value="Date: " />  
+				            <p:inputText value="#{referenceBean.reference.date}" size="12" maxlength="10"/>  
+				              
+							<h:outputLabel value="Year: " />  
+				            <p:inputText id="yearId" value="#{referenceBean.reference.year}" size="4" maxlength="4"
+				            			 validatorMessage="Validation error!  Please enter a number for Year">
+					            <p:message for="yearId" showDetail="false" showSummary="true"/>
+				            </p:inputText>
+				            
+							<h:outputLabel value="Pages: " />  
+				            <p:inputText value="#{referenceBean.reference.pages}" size="20" maxlength="30"/>  
+				              
+							<h:outputLabel value="NLM Status: " />  
+				            <p:inputText value="#{referenceBean.reference.nlm_status}" size="1" maxlength="1"/>  
+			
+							<h:outputLabel value="Review Article: " />  
+							<p:selectBooleanCheckbox value="#{referenceBean.reference.is_review_article}"></p:selectBooleanCheckbox>
+			
+							<h:outputLabel value="Date Cited: " />  
+				            <p:calendar id="dateCitedId" value="#{referenceBean.reference.date_cited}" pattern="MM/dd/yyyy" /> 
+				             				 
+							<h:outputLabel value="URL: " />  
+				            <p:inputTextarea value="#{referenceBean.reference.url}"  
+				             				 rows="4" cols="60" maxlength="200" readonly="false"/>
+				
+						</h:panelGrid>
+						<h:panelGrid columns="2" cellpadding="2">
+							<h:outputLabel value="Editors: " />  
+				            <p:inputTextarea value="#{referenceBean.reference.editors}"  
+				             				 rows="1" cols="60" maxlength="100" readonly="false"/>
+					
+							<h:outputLabel value="Publisher: " />  
+				            <p:inputText value="#{referenceBean.reference.publisher}" />  
+				
+							<h:outputLabel value="Primary Author: " />  
+				            <p:inputText value="#{referenceBean.reference._primary_author}" size="40" maxlength="60"/>  
+					        
+							<h:outputLabel value="Authors: " />  
+				            <p:inputTextarea value="#{referenceBean.reference.authors}"  
+				             				 rows="4" cols="60" maxlength="255" readonly="false"/>
+					          
+							<h:outputLabel value="Title: " />  
+				            <p:inputTextarea value="#{referenceBean.reference.title}"  
+				             				 rows="4" cols="60" maxlength="255" readonly="false"/>
+				             				 
+							<h:outputLabel value="Journal: " />  
+				            <p:inputTextarea value="#{referenceBean.reference.journal}"  
+				             				 rows="3" cols="60" maxlength="200" readonly="false"/>
+				             				 
+							<h:outputLabel value="Abstract: " />  
+				            <p:inputTextarea value="#{referenceBean.reference.abstract_}"  
+				             				 rows="5" cols="60" maxlength="65535" readonly="false"/>
+				              
+						</h:panelGrid>
+				</h:panelGrid>
+		        <br />   
+		        
+		        <p:messages id="referenceEditMessageId" for="referenceEditMessage" autoUpdate="true" errorClass="errorMessage" infoClass="infoMessage" warnClass="warnMessage" />
+		        <h:panelGrid columns="2" styleClass="ui-button-menu">
+		    		<p:commandButton styleClass="smallButton" value="Save" 
+		    						 actionListener="#{referenceBean.saveReference}" 
+		    						 onerror="alert('onerror');"
+									 oncomplete="if (args.closeReferenceDialog){PF('referenceEditDialogWV').hide();}"
+									 update=" :editReferenceFormId:referenceEditPGId @(.ui-datatable) " />
+									 
+		    		<p:commandButton styleClass="smallButton" value="Cancel" 
+		    						 actionListener="#{referenceBean.cancelReference}"
+									 oncomplete="PF('referenceEditDialogWV').hide();"
+									 immediate="true"
+									 update=" :editReferenceFormId:referenceEditPGId @(.ui-datatable) "/>
+		        </h:panelGrid>
+		        
+			</h:panelGroup>		
+
+	    </p:dialog>
+    </h:form>  
+	
+</ui:composition>

@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:p="http://primefaces.org/ui">
+
+	<br /> <br />
+ 
+	<h:panelGrid style="margin-bottom:10px;margin-left:20px;margin-right:20px;" cellpadding="5" id="therapiesListPanel">
+		<h:panelGrid columns="2" style="width:625px;">
+			<h:outputLabel for="therapySearch" value="Drug Name/Synonym/Trade name/Therapy name: " style="font: 14px Calibri, sans-serif;color: #002D72;line-height: 20px;font-weight: bold;"/>  
+	        <p:autoComplete id="therapySearch" value="#{molecularProfileResponseBean.myTherapyName}"  completeMethod="#{molecularProfileResponseBean.completeTherapy}" 
+	           							 minQueryLength="2" effect="fade" dropdown="false" scrollHeight="400" style="width:400px;">
+	        	<p:ajax event="itemSelect" listener="#{molecularProfileResponseBean.selectTherapyValueChangeListener}"  update="therapiesList" />
+	        </p:autoComplete>	
+		</h:panelGrid>
+
+        <p:outputLabel for="therapiesList" style="font: 14px Calibri, sans-serif;color: #002D72;line-height: 20px;font-weight: bold;" value="Select a therapy from the list below:" />
+        <p:selectOneListbox id="therapiesList" value="#{molecularProfileResponseBean.selectedTherapyName}" style="height:180px; width:600px;font: 13px Calibri, sans-serif;" >
+            <f:selectItems value="#{molecularProfileResponseBean.therapyDisplayNames}" var="therapyName" itemLabel="#{therapyName}" itemValue="#{therapyName}" />
+ 
+			<!--  converter="therapyConverter"  -->
+			
+        </p:selectOneListbox>
+    </h:panelGrid>
+    
+    <br />
+    <p:separator/>
+    <br />
+   	<p:messages for="selectTherapyMsg" autoUpdate="true" />
+    <h:panelGrid columns="2" padding="4px 10px" style="margin-left:20px;">
+		<p:commandButton styleClass="mediumButton" type="submit" value="OK" 
+  						 actionListener="#{molecularProfileResponseBean.selectTherapy}" 
+  						 oncomplete="PF('selectTherapyDialogWV').hide();" 
+  						 update=":mprForm:mprWorkspacePanelId" >
+  			<f:attribute name="attrSelectedTherapyName" value="#{molecularProfileResponseBean.selectedTherapyName}" />
+  			<!-- <f:attribute name="attrSelectedTherapy" value="#{molecularProfileResponseBean.selectedTherapy}" /> -->
+  		</p:commandButton>
+  		<p:commandButton styleClass="mediumButton" type="submit" value="Cancel" 
+  						 onclick="PF('selectTherapyDialogWV').hide();"
+  						 actionListener="#{molecularProfileResponseBean.cancelSelectTherapy}"  
+  						 update=":mprForm:mprWorkspacePanelId"/>
+     </h:panelGrid>
+		
+</ui:composition>
