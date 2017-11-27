@@ -1,5 +1,5 @@
 # Java
-Snippet of Java code
+Snippet of Java code. Note: Not runnable
 
 Java code related to a particular feature/curation entity in the curation user interface. 
 
